@@ -1,0 +1,49 @@
+chose_number = int(input("What do you choose? 0 for rock, 1 for paper, 2 for scissors\n"))
+rock_scissors_paper_shuffle = [rock, paper, scissors]
+shuffle_number = random.randint(0, 2)
+print(rock_scissors_paper_shuffle[chose_number])
+
+if chose_number == 0 and shuffle_number == 0:
+    print("computer chose:")
+    print(rock_scissors_paper_shuffle[shuffle_number])
+    print("It's a draw.")
+elif chose_number == 0 and shuffle_number == 1:
+    print("computer chose: ")
+    print(rock_scissors_paper_shuffle[shuffle_number])
+    print("You lose")
+elif chose_number == 0 and shuffle_number == 2:
+    print("computer chose: ")
+    print(rock_scissors_paper_shuffle[shuffle_number])
+    print("Your win")
+elif chose_number >= 3:
+    print("It's not vaild")
+
+if chose_number == 1 and shuffle_number == 1:
+    print("computer chose:")
+    print(rock_scissors_paper_shuffle[shuffle_number])
+    print("It's a draw.")
+elif chose_number == 1 and shuffle_number == 2:
+    print("computer chose: ")
+    print(rock_scissors_paper_shuffle[shuffle_number])
+    print("You lose")
+elif chose_number == 1 and shuffle_number == 0:
+    print("computer chose: ")
+    print(rock_scissors_paper_shuffle[shuffle_number])
+    print("Your win")
+elif chose_number >= 3:
+    print("It's not vaild")
+
+if chose_number == 2 and shuffle_number == 2:
+    print("computer chose:")
+    print(rock_scissors_paper_shuffle[shuffle_number])
+    print("It's a draw.")
+elif chose_number == 2 and shuffle_number == 0:
+    print("computer chose: ")
+    print(rock_scissors_paper_shuffle[shuffle_number])
+    print("You lose")
+elif chose_number == 2 and shuffle_number == 1:
+    print("computer chose: ")
+    print(rock_scissors_paper_shuffle[shuffle_number])
+    print("Your win")
+elif chose_number >= 3:
+    print("It's not vaild")
