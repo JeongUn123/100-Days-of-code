@@ -1,0 +1,59 @@
+from multiprocessing.forkserver import connect_to_new_process
+from unittest import result
+
+import art
+print(art.logo)
+continue_cal = "n"
+check_y_word = 0
+
+def add(n1, n2):
+    result = n1 + n2
+    return result
+
+def sub(n1, n2):
+    result = n1 - n2
+    return result
+
+def mul(n1, n2):
+    result = n1 * n2
+    return result
+
+def div(n1, n2):
+    result = n1 / n2
+    return result
+
+
+
+while 1:
+    if continue_cal == 'n':
+        first_number = int(input("What's the first number?: "))
+        if first_number == 99:
+            exit()
+    print("+\n-\n*\n/\n")
+    operation = input("Pick an operation: ")
+    next_number = int(input("What's the next number?: "))
+    if operation == "+":
+        save_result = add(first_number, next_number)
+        print(f"{first_number} + {next_number} = {save_result}")
+        continue_cal = input(f"Type 'y' to continue cal with {save_result}, or type 'n' a new calculation: ")
+
+        if continue_cal == "y":
+            first_number = save_result
+    elif operation == "-":
+        save_result = sub(first_number, next_number)
+        print(f"{first_number} - {next_number} = {save_result}")
+        continue_cal = input(f"Type 'y' to continue cal with {save_result}, or type 'n' a new calculation: ")
+        if continue_cal == "y":
+            first_number = save_result
+    elif operation == "*":
+        save_result = mul(first_number, next_number)
+        print(f"{first_number} * {next_number} = {save_result}")
+        continue_cal = input(f"Type 'y' to continue cal with {save_result}, or type 'n' a new calculation: ")
+        if continue_cal == "y":
+            first_number = save_result
+    elif operation == "/":
+        save_result = div(first_number, next_number)
+        print(f"{first_number} / {next_number} = {save_result}")
+        continue_cal = input(f"Type 'y' to continue cal with {save_result}, or type 'n' a new calculation: ")
+        if continue_cal == "y":
+            first_number = save_result
