@@ -1,0 +1,142 @@
+import art
+import random
+print(art.logo)
+
+game_start = "y"
+cards = [11,2,3,4,5,6,7,8,9,10,10,10,10]
+
+def blackjack(game_start):
+    start_money = 1000
+    betting_money = 0
+    have_money = start_money
+    if game_start == 'y':
+        goal_money_range = float(input("What's your goal money?: "))
+        while have_money != 0 or have_money <= goal_money_range:
+            cards = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
+            player = [0,0,]
+            dealer = [0,0,]
+            total_card_amount_player = 0
+            total_card_amount_dealer = 0
+            stop_get_card_dealer = 0
+            again_game = 0
+            hit_or_stand = ""
+            betting_money = float(input(f"you have {have_money}$. Enter your betting money(100 ~ 1000): "))
+            have_money -= betting_money
+            print(f"Your betting money is {betting_money}$, Your own money is {have_money}$")
+
+            for card in range(2):
+                player[card] = cards.pop(random.randint(0,len(cards)-1))
+                total_card_amount_player += player[card]
+                print(f"player card result: {card+1} card is {player[card]}")
+
+            print("\n")
+
+            for card in range(2):
+                dealer[card] = cards.pop(random.randint(0, len(cards)-1))
+                total_card_amount_dealer += dealer[card]
+                if card == 0:
+                    print(f"dealer card result: {card+1} card is {dealer[card]}")
+            print("\n")
+
+            print(f"Your Total Cards amount is {total_card_amount_player}")
+
+            if total_card_amount_player == 21:
+                print("wow! blackjack! your win!")
+                have_money = have_money + (betting_money * 2.5)
+                print(f"you get {betting_money * 2.5}$")
+
+            while again_game != 1:
+                hit_or_stand = input("if you want get cards, input 'hit', want's get cards input 'stand': ")
+                if hit_or_stand == 'hit':
+                    player.append(cards.pop(random.randint(0,len(cards)-1)))
+
+                    for i in range(1):
+                        total_card_amount_player += player[i-1]
+                    print(f"card is {player[i - 1]}")
+                    print(f"Your Total Cards amount is {total_card_amount_player}")
+
+                    if total_card_amount_player == 21:
+                        print("wow! blackjack! your win!")
+                        have_money = have_money + (betting_money * 2.5)
+                        print(f"you get {betting_money * 2.5}$")
+                        again_game = 1
+                        break
+
+                    if total_card_amount_player > 21:
+                        if player[0] == 11 or player[1] == 11:
+                            print("Your Total cards amounts is over the 21. But you have ACE Cards")
+                            print("Your ACE card value is 1")
+                            total_card_amount_player -= 10
+                            print(f"player's total cards amounts is {total_card_amount_player}")
+                        else:
+                            print(f"Your Total Cards amount is {total_card_amount_player}. over the 21")
+                            print("You lose")
+                            again_game = 1
+                            break
+
+                elif hit_or_stand == 'stand':
+                    while stop_get_card_dealer != 1:
+                        print(f"players Total Cards amount is {total_card_amount_player}")
+                        print(f"dealers Total Cards amount is {total_card_amount_dealer}")
+                        while stop_get_card_dealer != 1:
+                            #print(f"Dealers Total Cards amount is {total_card_amount_dealer}")
+                            if total_card_amount_dealer > 16 and total_card_amount_dealer <= 21:
+                                print(f"dealer Total Cards amount is {total_card_amount_dealer}")
+                                stop_get_card_dealer = 1
+                                again_game = 1
+                                break
+
+                            for i in range(1):
+                                dealer.append(cards.pop(random.randint(0,len(cards)-1)))
+                                total_card_amount_dealer += dealer[i-1]
+                            print(f"card is {dealer[i - 1]}")
+
+                            if total_card_amount_dealer > 21:
+                                print(f"dealer Total Cards amount is {total_card_amount_dealer}. over the 21.")
+                                print("player's win!")
+                                have_money = have_money + (betting_money * 1.5)
+                                print(f"you get {betting_money * 1.5}$")
+                                stop_get_card_dealer = 1
+                                again_game = 1
+                                break
+
+                            if total_card_amount_dealer == 21:
+                                print("dealer's card is BlackJack!")
+                                print("Your lose")
+                                stop_get_card_dealer = 1
+                                again_game = 1
+                                break
+
+                if stop_get_card_dealer == 1 and total_card_amount_player <= 21 and total_card_amount_dealer <= 21:
+                    if total_card_amount_player == total_card_amount_dealer:
+                        print("Draw")
+                        have_money = have_money + betting_money
+                        print(f"your pay back {betting_money}$")
+                        again_game = 1
+                        break
+
+                    elif total_card_amount_player > total_card_amount_dealer:
+                        print("player's win!")
+                        have_money = have_money + (betting_money * 1.5)
+                        print(f"your get {betting_money * 1.5}$")
+                        again_game = 1
+                        break
+
+                    elif total_card_amount_player < total_card_amount_dealer:
+                        print("dealer win!")
+                        print(f"your lost {betting_money}$")
+                        again_game = 1
+                        break
+
+            if have_money >= goal_money_range:
+                print("Congratulations! You acheive goal money!")
+                exit()
+
+
+
+
+
+
+
+game_start = input("Do you want to play BlackJack? Type 'y' is start to game, type 'n' is not play and game end: ")
+blackjack(game_start)
