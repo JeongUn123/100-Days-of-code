@@ -11,7 +11,7 @@ def blackjack(game_start):
     have_money = start_money
     if game_start == 'y':
         goal_money_range = float(input("What's your goal money?: "))
-        while have_money != 0 or have_money <= goal_money_range:
+        while have_money > 0 or have_money <= goal_money_range:
             cards = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
             player = [0,0,]
             dealer = [0,0,]
