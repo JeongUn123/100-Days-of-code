@@ -1,0 +1,125 @@
+import art
+import random
+print(art.logo)
+
+attempts = 0
+range_randomNumber = 0
+attempt_number = 0
+option = 0
+option_on = 0
+select_option = ""
+
+def level(choose_level):
+    if choose_level == "easy":
+        attempts = 20
+        range_randomNumber = 128
+        print("You choose easy level.")
+        print(f"The random range is 1 ~ {range_randomNumber}.")
+        return attempts, range_randomNumber
+
+    elif choose_level == "hard":
+        attempts = 10
+        range_randomNumber = 256
+        print("You choose hard level.")
+        print(f"The random range is 1 ~ {range_randomNumber}.")
+        return attempts, range_randomNumber
+
+
+def option_select(option):
+
+    global range_randomNumber
+    global random_number
+    if option == 'y':
+        select = input("Type '1' is check the random Number range(random deviation max 20), '2' is check if a number is odd or even(random deviation max 50): ")
+
+        if select == '1':
+            range_max20 = random.randint(1, 20)
+            #print(f"range is {range_max20}.")
+            print("You choose the random Number range.")
+            print(f"The random range is {random_number + range_max20}.")
+
+        elif select == '2':
+            range_max50 = random.randint(1, 50)
+            #print(f"range is {range_max50}.")
+            print("You choose odd or even.")
+            if range_max50 % 2 == 0:
+                print("The number is even.")
+            else:
+                print("The number is odd.")
+            print(f"and The random range is {random_number + range_max50}.")
+
+
+
+
+
+
+
+
+def guessing_game():
+    global attempts
+    global range_randomNumber
+    global attempt_number
+    global random_number
+    global select_option
+    global option
+    global option_on
+
+    while random_number != attempt_number or attempts > 0:
+        print(f"you have {attempts} attempts remaining to guess the number.")
+        if option_on == 0:
+            select_option = input(f"If you want option? Type 'y' or 'n': ")
+            if select_option == "y":
+                attempts -= 3
+                option = option_select(select_option)
+                option_on = 1
+                select_option = ""
+
+            elif select_option == "n":
+                option_on = 1
+                select_option = ""
+                print("your select type n")
+                continue
+
+            else:
+                option_on = 1
+                select_option = ""
+                print("your select other type y or n. so your not want the option")
+                continue
+
+        guess = int(input(f"Make a guess(1~{range_randomNumber}): "))
+        if attempts <= 0:
+            print(f"You haven't attepmpt count. The number is {random_number}.")
+            break
+
+        elif random_number == guess:
+            print(f"You got it! The number is {random_number}.")
+            break
+        elif random_number - guess <= 10 and random_number - guess >= 0:
+            print("little low")
+            attempts -= 1
+
+        elif ((random_number - guess) * -1) >= 0 and ((random_number - guess )* -1) <= 10:
+            print("little high")
+            attempts -= 1
+
+        elif random_number - guess > 10 and random_number - guess <= 20:
+            print("Too low")
+            attempts -= 1
+
+        elif ((random_number - guess)* -1) > 10 and ((random_number - guess)* -1) <= 20:
+            print("Too high")
+            attempts -= 1
+
+        elif random_number - guess > 20 or random_number - guess < -20:
+            print("Not correct")
+            attempts -= 1
+
+
+print("Welcome to the Number Guessing Game!")
+choose_level = input("Choose a difficulty. Type 'easy'or 'hard' : ")
+attempts, range_randomNumber = level(choose_level)
+
+random_number = random.randint(1, range_randomNumber)
+#print(f"Number is {random_number}.")
+guessing_game()
+
