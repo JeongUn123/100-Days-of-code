@@ -1,0 +1,77 @@
+import art
+import random
+import game_data
+
+print(art.logo)
+
+compare_A = 0
+compare_B = 0
+compare_C = 0
+score = 0
+game_end = 0
+correct = ""
+
+
+def choose_data():
+    compare_A = random.choice(game_data.data)
+    compare_B = random.choice(game_data.data)
+    if compare_A == compare_B:
+        print("A, B data is same so B data is reset and another data choose.")
+        compare_B = random.choice(game_data.data)
+    return compare_A, compare_B
+
+def print_compareA_and_compareB(compare_A, compare_B):
+
+    print(f"compare A : name is {compare_A['name']}, description is {compare_A['description']}, country is {compare_A['country']}")
+    print(art.vs)
+    print(f"compare B : name is {compare_B['name']}, description is {compare_B['description']}, country is {compare_B['country']}")
+    return compare_A, compare_B
+
+
+def determine_winner(determine, compare_A, compare_B, compare_C):
+    global score
+    global game_end
+    global correct
+
+    if compare_A['follower_count'] > compare_B['follower_count']:
+        correct = "A"
+        if determine == correct:
+            score += 1
+            print(f"You got it! your current score is {score}")
+            compare_A = compare_C
+            #print(compare_C)
+            #print(compare_A)
+            return compare_A, compare_B, compare_C
+
+        else:
+            print(f"Your sclect is incorrect your current score is {score}")
+            game_end = 1
+
+    else:
+        correct = "B"
+        if determine == correct:
+            score += 1
+            print(f"You got it! your current score is {score}")
+            compare_B = compare_C
+            #print(compare_C)
+            #print(compare_B)
+            return compare_A, compare_B, compare_C
+
+        else:
+            print(f"Your select is incorrect your final score is {score}")
+            game_end = 1
+
+def rechoose_data_compareB(compare_A, compare_B, compare_C):
+
+    compare_A = compare_C
+    compare_B = random.choice(game_data.data)
+
+    return compare_A, compare_B, compare_C
+
+
+compare_A, compare_B = choose_data()
+while game_end != 1:
+    compare_A, compare_B = print_compareA_and_compareB(compare_A, compare_B)
+    determine = input("Who has more fllower? Type 'A' or 'B': ")
+    determine_winner(determine, compare_A, compare_B, compare_C)
+    rechoose_data_compareB(compare_A, compare_B, compare_C)
