@@ -1,0 +1,161 @@
+from robolink import *
+from robodk import *
+
+# 1. Connect and first setup
+RDK = Robolink()
+
+robot = RDK.Item('UR10', ITEM_TYPE_ROBOT)
+tool = RDK.Item('OnRobot Gecko SP1 Single Pad Gripper')
+pick_target = RDK.Item('Pick_Target')
+place_target = RDK.Item('Place_Target')
+
+# Pose_Set
+move1 = RDK.Item('Move1')
+move2 = RDK.Item('Move2')
+move3 = RDK.Item('Move3')
+move4 = RDK.Item('Move4')
+
+boxes = ["Box1", "Box2", "Box3", "Box4"] # Box list
+box_poses = []
+
+
+for i in range(len(boxes)):
+    box_item = RDK.Item(boxes[i])
+    box_item.setParentStatic(RDK.Item('New Station'))
+    reset_pose = pick_target.Pose() * transl(0, i * -150, 0)  # Reset box positions        
+    
+    box_item.setPose(reset_pose)
+# Robot Valid Check
+if not robot.Valid():
+    print("Check the Robot name!")
+    quit()
+
+# 2. Work Start
+robot.MoveJ(robot.JointsHome())
+
+# 3. Loop (PICK & PLACE)
+for i in range(len(boxes)):
+    
+    # Get current box_item
+    box_item = RDK.Item(boxes[i])
+    
+    # 유효성 검사 (박스나 타겟이 없으면 에러 방지)
+    if not box_item.Valid() or not pick_target.Valid() or not place_target.Valid():
+        print(f"Index {i} Error: Box or Targets not found!")
+        continue
+
+    # Pick Position
+    current_pick_pose = pick_target.Pose() * transl(0, i * -150, 0)
+    # Move3 Posotion
+    current_Move2_pose = move2.Pose() * transl(i * 50, i * 50, 0)
+    current_Move3_pose = move3.Pose() * transl(i * 50, i * 50, 0)
+    current_Move4_pose = move4.Pose() * transl(i * 50, i * 50, 0)
+    current_place_pose = place_target.Pose() * transl(0,i * -150, 0)
+
+    print(f"Moving {boxes[i]}...")
+
+    # Pick 
+    robot.MoveJ(move1)          # Move
+    robot.MoveJ(current_pick_pose) # Move pcik position
+
+    # Box Attach (Parent-Child Relationship)
+    box_item.setParentStatic(tool)
+    box_item.setPose(transl(0,0,0))
+    print(f" -> {boxes[i]} Attached")
+
+    # PLACE 
+    robot.MoveJ(current_Move2_pose)
+    robot.MoveJ(current_Move3_pose)  
+    robot.MoveJ(current_place_pose) # Move place position
+    
+
+    box_item.setParentStatic(RDK.Item('New Station')) 
+    # robot.DetachAll()
+    print(f" -> {boxes[i]} Placed")
+    
+    robot.MoveJ(current_Move4_pose)   
+
+# Work complete, return to home
+robot.MoveJ(robot.JointsHome())
+RDK.ShowMessage("Pick and Place Complete!")
+
+----------------------------------------------------------------------------------------------------------------------
+second - exchange box to 2 robot(Ur10, UR5)
+-----------------------------------------------------------------------------------------------------------------------
+from robolink import *
+from robodk import *
+
+# 1. connect and first setup
+RDK = Robolink()
+
+# robot_A
+robotA = RDK.Item('UR10')             
+gripperA = RDK.Item('OnRobot Gecko SP1 Single Pad Gripper')
+
+# robot_B
+robotB = RDK.Item('UR5')             
+gripperB = RDK.Item('OnRobot Gecko SP3 Single Pad Gripper')     
+
+box = RDK.Item('Box')
+
+
+# Move_Pose_set(UR10)
+move1 = RDK.Item('Move1')
+move2 = RDK.Item('Move2')
+safety_pose = RDK.Item('Safety_pose')
+exchange_UR10 = RDK.Item('UR10_Exchange')
+pick_target = RDK.Item('Picking') 
+
+# Move_Pose_set(UR5)
+UR5_move1 = RDK.Item('UR5_Move1')
+UR5_move2 = RDK.Item('UR5_Move2')
+exchange_UR5 = RDK.Item('UR5_Exchange') 
+place_target = RDK.Item('Placing')
+
+
+# Validation Check
+if not robotA.Valid() or not robotB.Valid():
+    print("Check the robot name! The name is same as in RoboDK station.")
+    quit()
+
+# 2. Initial Positioning
+print("Position Resetting...")
+robotA.MoveJ(robotA.JointsHome())
+robotB.MoveJ(robotB.JointsHome())
+
+box.setParentStatic(RDK.ActiveStation())
+box.setPose(pick_target.Pose())            
+
+
+# 3. Work Start: Handover between Robot A and Robot B
+print("Robot A: Picking the Box.")
+robotA.MoveJ(move1)        
+robotA.MoveJ(pick_target)
+box.setParentStatic(gripperA)     
+box.setPose(transl(0,0,0))     
+print("Robot A: Get box!")
+
+
+# Move to exchange point
+robotA.MoveJ(exchange_UR10)
+
+robotB.MoveJ(exchange_UR5) 
+
+# Hand over
+print("Handover: A -> B")
+box.setParentStatic(gripperB)     
+box.setPose(transl(0,0,0))  
+robotA.MoveJ(safety_pose)      
+
+robotA.MoveL(robotA.Pose() * transl(-200, 0, 0)) 
+print("Robot A: success.")
+robotA.MoveJ(robotA.JointsHome())
+
+print("Robot B: Move to Target")
+robotB.MoveJ(UR5_move1)
+robotB.MoveJ(UR5_move2)
+robotB.MoveJ(place_target)
+
+box.setParentStatic(RDK.Item('New Station'))
+print("Work finish!")
+robotB.MoveJ(robotB.JointsHome())
