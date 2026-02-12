@@ -1,0 +1,104 @@
+# server code
+import socket
+import random
+import logging
+
+# first setting
+HOST = '127.0.0.2'
+PORT = 8800
+
+# date and time for logging
+logging.basicConfig(filename='server.log', level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s') # log form time - levelname(INFO,WARNING) - message
+
+random_number = random.randint(1, 101)
+print(f"Random number (for debugging): {random_number}")
+
+# create socket
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# bind the socket to the address and port
+server_socket.bind((HOST, PORT))
+
+# listen for incoming connections
+server_socket.listen()
+print(f'Server listening on {HOST}:{PORT}')
+
+# accept a connection
+client_socket, client_address = server_socket.accept()
+print(f'connected by {client_address}')
+logging.info(f"Client connected from {client_address}")
+
+# data reception loop
+while True:
+    # receive data
+    data = client_socket.recv(1024)
+    if not data:
+        break
+    try:
+        guess = int(data.decode('utf-8').strip()) # change type to read client
+        print(f"Received: {guess}")
+        
+        logging.info(f"Received guess: {guess}")
+
+    except ValueError:
+        client_socket.sendall("Invalid input. Please send a number.".encode('utf-8'))
+        logging.warning(f"Invalid input received: {data}")
+        continue
+
+
+    # send response
+    #client_socket.sendall(response.encode('utf-8'))
+
+    if guess < random_number:
+        response = "Too Low!"
+    elif guess > random_number:
+        response = "Too High!"
+    else:
+        response = "Correct! You've guessed the number."
+        client_socket.sendall(response.encode('utf-8'))
+        logging.info("Client guessed the number correctly.")
+        break
+
+    client_socket.sendall(response.encode('utf-8'))
+    logging.info(f"Sent response: {response}")
+# close the client socket
+client_socket.close()
+server_socket.close()
+
+
+# client code
+import socket
+
+#first setting
+HOST = '127.0.0.2'
+PORT = 8800
+
+# create socket
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   
+
+# connect to the server
+client_socket.connect((HOST, PORT))
+print(f'Connected to server! at {HOST}:{PORT}')
+
+try:
+    while True:
+        # send messsage
+        message = int(input("Guess a number: "))
+
+        if not message:
+            continue
+
+        client_socket.sendall(str(message).encode('utf-8'))
+        print( f'Sent: {message}')
+
+        # receive response
+        data = client_socket.recv(1024)
+        result = data.decode('utf-8')
+        print(f"Received: {result}")  
+        
+
+        if "Correct!" in result:
+            break
+finally:
+    client_socket.close()
