@@ -1,0 +1,60 @@
+# server code
+import socket
+
+HOST = '127.0.0.1'
+PORT = 8800
+
+# create socket / socket()
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# bind the socket to the address and port / bind()
+server_socket.bind((HOST, PORT))
+
+# listen for incoming connections / listen()
+server_socket.listen()
+print(f'Server listening on {HOST}:{PORT}')
+
+# accept a connection / accept()
+client_socket, client_address = server_socket.accept()
+print(f'connected by {client_address}')
+
+# data reception loop
+while True:
+    # receive data / recv()
+    data = client_socket.recv(1024)
+    if not data:
+        break
+    print(f"Received: {data.decode('utf-8')}")
+
+    # send response / sendall()
+    client_socket.sendall(data)
+
+# close the client socket
+client_socket.close()
+server_socket.close()
+
+
+
+# client code
+import socket
+
+HOST = '127.0.0.1'
+PORT = 8800
+
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# connect to the server / connect()
+client_socket.connect((HOST, PORT))
+print(f'Connected to server! at {HOST}:{PORT}')
+
+# send messsage / sendall()
+message = 'Hello World'
+client_socket.sendall(message.encode('utf-8'))
+print( f'Sent: {message}')
+
+# receive response / recv()
+data = client.socket.recv(1024)
+print(f"Received: {data.decode('utf-8')}")
+
+# close the socket
+client_socket.close()
