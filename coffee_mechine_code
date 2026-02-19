@@ -1,0 +1,103 @@
+MENU = {
+    "espresso": {
+        "ingredients": {
+            "water": 50,
+            "coffee": 18,
+        },
+        "cost": 1.5,
+    },
+    "latte": {
+        "ingredients": {
+            "water": 200,
+            "milk": 150,
+            "coffee": 24,
+        },
+        "cost": 2.5,
+    },
+    "cappuccino": {
+        "ingredients": {
+            "water": 250,
+            "milk": 100,
+            "coffee": 24,
+        },
+        "cost": 3.0,
+    }
+}
+
+resources = {
+    "water": 300,
+    "milk": 200,
+    "coffee": 100,
+    "money" : 0,
+}
+
+coins = {"pennies": 0.01, "nickles": 0.05, "dimes": 0.10, "quarters": 0.25}
+water, milk, coffee = 0, 0, 0
+total_price = 0
+get_money = 0
+escape_command = 0
+
+#input check
+def off_or_report(choose_menu):
+    if choose_menu == 'off':
+        exit()
+    elif choose_menu == 'report':
+        print(f'Water: {resources["water"]:<5}ml.')
+        print(f'Milk: {resources["milk"]:<5}ml.')
+        print(f'coffee: {resources["coffee"]:<5}g.')
+        print(f'money: {resources["money"]:<5.2f}$.')
+    else:
+        return 0
+
+
+def resource_check(order_name):
+    ingredients = MENU[order_name]['ingredients']
+
+    # check resource
+    for item in ingredients:
+        if ingredients[item] > resources.get(item, 0):
+            print(f"Sorry, there is not enough {item}.")
+            return False
+
+
+    for item in ingredients:
+        resources[item] -= ingredients[item]
+
+    return True
+
+
+def sum_price(choose_menu):
+    global total_price
+    print(f"the {choose_menu} price is {MENU[choose_menu]['cost']}$.")
+    for i, value in coins.items():
+        count = int(input(f"How many {i}?: "))
+        total_price += count * value
+    return total_price
+
+
+
+
+
+while escape_command != 1:
+    choose_menu = input("What would you like? (espresso/latte/cappuccino): ")
+    if choose_menu in MENU:
+        if resource_check(choose_menu):
+            total_price = 0
+            total_price = sum_price(choose_menu)
+            print(f'your given {total_price}$.')
+            if total_price < MENU[choose_menu]['cost']:
+                print("Sorry, there is not enough money. Money refunded.")
+                exit()
+            else:
+                change_money = total_price - MENU[choose_menu]['cost']
+                print(f"Thank you. here is change money {change_money:.2f}$.")
+                get_money = round(total_price - change_money, 2)
+                resources['money'] += get_money
+
+        elif choose_menu == 'off' or choose_menu == 'report':
+            off_or_report(choose_menu)
+
+        if choose_menu == 'escape':
+            escape_command = 1
+    else:
+        off_or_report(choose_menu)
