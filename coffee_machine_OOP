@@ -1,0 +1,41 @@
+from menu import Menu, MenuItem
+from coffee_maker import CoffeeMaker
+from money_machine import MoneyMachine
+
+
+menu = Menu()
+coffee_maker = CoffeeMaker()
+money_machine = MoneyMachine()
+
+item = menu.get_items()
+
+
+on = True
+
+while on:
+    print(item)
+    select_drink = input("choose the drink: ")
+
+    if select_drink == 'report':
+        coffee_maker.report()
+        money_machine.report()
+    elif select_drink == 'off':
+        on = False
+    else:
+        select_coffee = menu.find_drink(select_drink)
+        if select_coffee and coffee_maker.is_resource_sufficient(select_coffee):
+            print(f"Name: {select_coffee.name}, Price: {select_coffee.cost}$")
+        else:
+            refill = input("resource is not sufficient. refill? (y/n): ").lower()
+            if refill == 'y':
+                coffee_maker.resources["water"] += 1000
+                coffee_maker.resources["milk"] += 1000
+                coffee_maker.resources["coffee"] += 100
+                print("the resource is sufficient (water: +1000ml, milk: +1000ml, coffee: +100g)")
+                coffee_maker.report()
+            else:
+                print("The resource is not refill")
+
+
+        if money_machine.make_payment(select_coffee.cost):
+            coffee_maker.make_coffee(select_coffee)
